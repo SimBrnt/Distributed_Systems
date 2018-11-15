@@ -3,6 +3,7 @@ package de.unistgt.ipvs.vs.ex1.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import de.unistgt.ipvs.vs.ex1.server.CalculationSession;
 
 /**
  * Extend the run-method of this class as necessary to complete the assignment.
@@ -18,6 +19,10 @@ public class CalcSocketServer extends Thread {
 		this.port = port;
 	}
 	
+	public static void main(String[] args){
+		CalcSocketServer calc = new CalcSocketServer(2009);
+		calc.run();
+	}
 	@Override
 	public void interrupt() {
 		try {
@@ -36,6 +41,15 @@ public class CalcSocketServer extends Thread {
 		}
 
 		// Start listening server socket ..
+		try {
+			this.srvSocket = new ServerSocket(this.port);
+			Thread t = new Thread(new CalculationSession(this.srvSocket));
+			t.start();
+			System.out.println("Serveur prêt pour servir plusieurs clients !");
+			} catch (IOException e) {
+	
+				e.printStackTrace();
+			}
 	}
         
         public void waitUnitlRunnig(){
