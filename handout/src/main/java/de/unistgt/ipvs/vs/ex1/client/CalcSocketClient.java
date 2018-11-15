@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.io.*;
 import java.util.Scanner;
-import java.io.PrintWriter;
 import de.unistgt.ipvs.vs.ex1.server.CalculationImpl;
 /**
  * Implement the connectTo-, disconnect-, and calculate-method of this class
@@ -20,6 +19,7 @@ public class CalcSocketClient {
 	private int    rcvdErs;		// --> Number of invalid message contents
 	private int    calcRes;		// --> Calculation result (cf.  'RES')
 	private BufferedReader in;
+	private PrintWriter out;
 
 	
 	public CalcSocketClient() {
@@ -80,52 +80,31 @@ public class CalcSocketClient {
 
 		// FAIRE UN REGEX valid message
 		// Trouver un moyen d'extraire avec un caractere d'un string
-		int i;
+		int i=0;
 		if(!request.contains("<")){
 			this.rcvdErs++;
 		}
-		String[] reqB = request.split("<");
-		String[] reqE = reqB[1].split(">");
-		System.out.println("Taille tableau "+reqB.length);
-		System.out.println("Case tableau "+ reqE[0]);
-		//if(reqArray[0].startsWith("<")){
-		//	String[] operation = reqArray[1].substring(0, (reqArray[1].length()-1)).split(" ");
-		//	System.out.println("OPERATION "+operation);
+		String[] reqE = request.split("[<>]");
+			try{
+				out = new PrintWriter(this.cliSocket.getOutputStream());
+				out.println(reqE[1].toString());
+				out.flush();
+				in = new BufferedReader (new InputStreamReader (this.cliSocket.getInputStream()));
+				System.out.println(in.readLine());
+			}catch(IOException e){
+				e.printStackTrace();
+			}
 		//Solution here
 		try{
 			CalculationImpl calc = new CalculationImpl();
-			/*switch(operation[0])
-              {
-			  case "ADD":
-				System.out.println("ON Rentre dans le ADD");
-                for(i=1; i<operation.length; i++){
-					calc.add(Integer.parseInt(operation[i].toString()));
-				}
-				System.out.println("CALC est "+ calc.getResult());
-				//calcRes = calc.getResult();
-                break;
-              case 2:
-            	  operation = dIn.readUTF();
-            	  System.out.println("operation: " + operation);
-                break;
-              case 3:
-            	  integer2 = dIn.readInt();
-            	  done = true;
-            	  System.out.println("integer2: " + integer2);
-                break;*/
-			 //}
-			
 			/** Parse la request pour savoir si elle est valide, ensuite faire un switch case pour connaitre l'operation, appeler la bonne opération suivant la requête 
 			 * Réussir à gérer avec les in et out les requetes que le client envoie 
 			 * Renvoyer le resultat
-			 * pouri allant de 1 a operation.length
+			 * pour i allant de 1 a operation.length
 			*/
-			//calc.add(10);
 		}catch (RemoteException e){ 
 			e.printStackTrace();
 		}
-	//}
-		System.out.println("RETOURNE TRUE");
 		return true;
 	}
 }
