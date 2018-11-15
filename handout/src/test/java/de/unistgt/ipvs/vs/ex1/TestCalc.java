@@ -20,14 +20,18 @@ public class TestCalc {
          // Start Client
         String srvIP   = "localhost"; //"127.0.0.1";
         int      srvPort = 12345;
-
+        
         // Start Server
+        System.out.print("Starting server...");
         CalcSocketServer cSrv = new CalcSocketServer(srvPort);
         cSrv.start();
         cSrv.waitUnitlRunnig();
+        System.out.println("OK");
 
+        System.out.print("Starting client...");
         CalcSocketClient cCli = new CalcSocketClient();
         cCli.connectTo(srvIP, srvPort);
+        System.out.println("OK");
 
         //Test 
         String req1 = "ADD 1 2 3 SUB 3 2 1";

@@ -36,14 +36,37 @@ public class CalcSocketServer extends Thread {
 		}
 
 		// Start listening server socket ..
+		try {
+			srvSocket = new ServerSocket(port);
+			while(true) {
+				new CalcClientServerThread(srvSocket.accept()).start();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
         
-        public void waitUnitlRunnig(){
-            while(this.srvSocket == null){
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException ex) {
-                }
+    public void waitUnitlRunnig(){
+        while(this.srvSocket == null){
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ex) {
             }
         }
+    }
+}
+
+class CalcClientServerThread extends Thread {
+	Socket clientSocket;
+		
+	public CalcClientServerThread(Socket clientSock) {
+		this.clientSocket = clientSock;
+	}
+	
+	@Override
+	public void run() {
+		System.out.println("HELLO");
+	}
+	
 }
