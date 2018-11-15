@@ -1,8 +1,8 @@
 package de.unistgt.ipvs.vs.ex1.client;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -37,7 +37,15 @@ public class CalcSocketClient {
 
 	public boolean connectTo(String srvIP, int srvPort) {
                
-		//Solution here
+		try {
+			cliSocket = new Socket(srvIP, srvPort);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			return false;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 		
 		return true;
 	}
@@ -56,8 +64,19 @@ public class CalcSocketClient {
 			return false;
 		}
 		
-		//Solution here
-		
+		try {
+			ObjectOutputStream oosOut = new ObjectOutputStream(cliSocket.getOutputStream());
+			ObjectInputStream oisIn = new ObjectInputStream(cliSocket.getInputStream());
+			
+			System.out.println("SENDING: " + request);
+			oosOut.writeObject(request);
+			
+			oosOut.close();
+			oisIn.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 }

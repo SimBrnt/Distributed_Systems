@@ -1,6 +1,8 @@
 package de.unistgt.ipvs.vs.ex1.server;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -58,15 +60,29 @@ public class CalcSocketServer extends Thread {
 }
 
 class CalcClientServerThread extends Thread {
-	Socket clientSocket;
+	Socket cliSocket;
 		
-	public CalcClientServerThread(Socket clientSock) {
-		this.clientSocket = clientSock;
+	public CalcClientServerThread(Socket socket) {
+		this.cliSocket = socket;
 	}
 	
 	@Override
 	public void run() {
-		System.out.println("HELLO");
+		try {
+			ObjectOutputStream oosOut = new ObjectOutputStream(this.cliSocket.getOutputStream());
+			ObjectInputStream oisIn = new ObjectInputStream(this.cliSocket.getInputStream());
+			
+			String request = (String) oisIn.readObject();
+			System.out.println("RECEIVED: " + request);
+			
+			oosOut.close();
+			oisIn.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }

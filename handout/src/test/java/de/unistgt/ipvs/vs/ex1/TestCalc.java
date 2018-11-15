@@ -36,7 +36,7 @@ public class TestCalc {
         //Test 
         String req1 = "ADD 1 2 3 SUB 3 2 1";
         cCli.calculate("<" + (req1.length() + 5) + ":" + req1 + ">");
-        cCli.calculate("<08:rEs>");
+        //cCli.calculate("<08:rEs>");
 
         assertEquals(0,cCli.getCalcRes());
         assertEquals(11,cCli.getRcvdOKs());
