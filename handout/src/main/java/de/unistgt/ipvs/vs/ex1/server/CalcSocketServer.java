@@ -1,10 +1,7 @@
 package de.unistgt.ipvs.vs.ex1.server;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
  * Extend the run-method of this class as necessary to complete the assignment.
@@ -41,7 +38,7 @@ public class CalcSocketServer extends Thread {
 		try {
 			srvSocket = new ServerSocket(port);
 			while(true) {
-				new CalcClientServerThread(srvSocket.accept()).start();
+				new CalculationSession(srvSocket.accept()).start();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -57,32 +54,4 @@ public class CalcSocketServer extends Thread {
             }
         }
     }
-}
-
-class CalcClientServerThread extends Thread {
-	Socket cliSocket;
-		
-	public CalcClientServerThread(Socket socket) {
-		this.cliSocket = socket;
-	}
-	
-	@Override
-	public void run() {
-		try {
-			ObjectOutputStream oosOut = new ObjectOutputStream(this.cliSocket.getOutputStream());
-			ObjectInputStream oisIn = new ObjectInputStream(this.cliSocket.getInputStream());
-			
-			String request = (String) oisIn.readObject();
-			System.out.println("RECEIVED: " + request);
-			
-			oosOut.close();
-			oisIn.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 }
