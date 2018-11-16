@@ -1,6 +1,7 @@
 package de.unistgt.ipvs.vs.ex1;
 
 import de.unistgt.ipvs.vs.ex1.client.CalcSocketClient;
+import de.unistgt.ipvs.vs.ex1.common.MessageUtils;
 import de.unistgt.ipvs.vs.ex1.server.CalcSocketServer;
 import java.io.IOException;
 import static org.junit.Assert.*;
@@ -96,5 +97,9 @@ public class TestCalc {
         cCli.disconnect();
     }
         
+    @Test
+    public void messageUtilTests() {
+    	assertEquals("<07:OK>", MessageUtils.generate("OK"));
+    }
 
 }
