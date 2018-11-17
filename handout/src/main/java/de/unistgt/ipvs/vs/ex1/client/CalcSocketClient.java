@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import de.unistgt.ipvs.vs.ex1.common.MessageUtils;
+
 /**
  * Implement the connectTo-, disconnect-, and calculate-method of this class
  * as necessary to complete the assignment. You may also add some fields or methods.
@@ -15,6 +17,9 @@ public class CalcSocketClient {
 	private int    rcvdOKs;		// --> Number of valid message contents
 	private int    rcvdErs;		// --> Number of invalid message contents
 	private int    calcRes;		// --> Calculation result (cf.  'RES')
+	
+	private ObjectOutputStream oosOut;
+	private ObjectInputStream oisIn;
 	
 	public CalcSocketClient() {
 		this.cliSocket = null;
@@ -39,6 +44,8 @@ public class CalcSocketClient {
                
 		try {
 			cliSocket = new Socket(srvIP, srvPort);
+			oosOut = new ObjectOutputStream(cliSocket.getOutputStream());
+			oisIn = new ObjectInputStream(cliSocket.getInputStream());
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			return false;
@@ -52,30 +59,54 @@ public class CalcSocketClient {
 
 	public boolean disconnect() {
                
-	    //Solution here
+		try {
+			oosOut.close();
+			oisIn.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
                
 		return true;
 	}
 
 	public boolean calculate(String request) {
-               
+        
 		if (cliSocket == null) {
 			System.err.println("Client not connected!");
 			return false;
 		}
 		
 		try {
-			ObjectOutputStream oosOut = new ObjectOutputStream(cliSocket.getOutputStream());
-			ObjectInputStream oisIn = new ObjectInputStream(cliSocket.getInputStream());
 			
-			System.out.println("SENDING: " + request);
 			oosOut.writeObject(request);
 			
-			oosOut.close();
-			oisIn.close();
+			boolean finReceived = false;
+			while(!finReceived) {
+				String ans = (String) oisIn.readObject();
+				for(String cmd : MessageUtils.split(ans)) {
+					switch(cmd) {
+					case "FIN":
+						finReceived = true;
+						break;
+					case "OK":
+						rcvdOKs += 1;
+						break;
+					case "ERR":
+						rcvdErs += 1;
+						break;	
+					case "BRKERR":
+						System.err.println("The request generated a server error and could not be handled.");
+						break;
+					}
+				}
+			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return true;
 	}

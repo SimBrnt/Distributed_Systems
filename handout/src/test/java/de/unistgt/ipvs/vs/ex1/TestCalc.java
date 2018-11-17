@@ -23,21 +23,17 @@ public class TestCalc {
         int      srvPort = 12345;
         
         // Start Server
-        System.out.print("Starting server...");
         CalcSocketServer cSrv = new CalcSocketServer(srvPort);
         cSrv.start();
         cSrv.waitUnitlRunnig();
-        System.out.println("OK");
 
-        System.out.print("Starting client...");
         CalcSocketClient cCli = new CalcSocketClient();
         cCli.connectTo(srvIP, srvPort);
-        System.out.println("OK");
 
         //Test 
         String req1 = "ADD 1 2 3 SUB 3 2 1";
         cCli.calculate("<" + (req1.length() + 5) + ":" + req1 + ">");
-        //cCli.calculate("<08:rEs>");
+        cCli.calculate("<08:rEs>");
 
         assertEquals(0,cCli.getCalcRes());
         assertEquals(11,cCli.getRcvdOKs());
@@ -91,8 +87,8 @@ public class TestCalc {
         cCli.calculate("a faq 23 <" + (req32.length() + 5) + ":" + req32 + "> bla 42 ");
        
         
-        assertEquals(42,cCli.getCalcRes());
         assertEquals(3, cCli.getRcvdErs());
+        assertEquals(42,cCli.getCalcRes());
         
         cCli.disconnect();
     }
