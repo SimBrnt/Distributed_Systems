@@ -46,10 +46,21 @@ public class CalcSocketClient {
 			cliSocket = new Socket(srvIP, srvPort);
 			oosOut = new ObjectOutputStream(cliSocket.getOutputStream());
 			oisIn = new ObjectInputStream(cliSocket.getInputStream());
+			
+			String rdyMsg = (String) oisIn.readObject();
+			if(!MessageUtils.split(rdyMsg)[0].equals("RDY")) {
+				System.err.println("The server did not send the RDY message.");
+				return false;
+			}
+			
+			
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			return false;
 		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			return false;
 		}

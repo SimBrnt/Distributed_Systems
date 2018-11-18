@@ -29,6 +29,8 @@ public class CalculationSession extends Thread {
 			ObjectOutputStream oosOut = new ObjectOutputStream(this.cliSocket.getOutputStream());
 			ObjectInputStream oisIn = new ObjectInputStream(this.cliSocket.getInputStream());
 			
+			oosOut.writeObject(MessageUtils.generate("RDY"));
+			
 			ICalculation calc = new CalculationImpl();
 			Operation curOp = null;
 			
