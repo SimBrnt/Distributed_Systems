@@ -1,8 +1,8 @@
 package de.unistgt.ipvs.vs.ex1;
 
 import de.unistgt.ipvs.vs.ex1.client.CalcSocketClient;
+import de.unistgt.ipvs.vs.ex1.common.MessageUtils;
 import de.unistgt.ipvs.vs.ex1.server.CalcSocketServer;
-import java.io.IOException;
 import static org.junit.Assert.*;
 import org.junit.Rule;
 
@@ -20,7 +20,7 @@ public class TestCalc {
          // Start Client
         String srvIP   = "localhost"; //"127.0.0.1";
         int      srvPort = 12345;
-
+        
         // Start Server
         CalcSocketServer cSrv = new CalcSocketServer(srvPort);
         cSrv.start();
@@ -81,16 +81,20 @@ public class TestCalc {
         //Test 
         String req31 = "  MUL  1   ASM  ADD ABC 10    5  SUB 100 ADD10   ADD";
         cCli.calculate("24 foo 42 <" + (req31.length() + 5) + ":" + req31 + ">");
-
+        
         String req32 = "60 4 MUL -2 RES  ";
         cCli.calculate("a faq 23 <" + (req32.length() + 5) + ":" + req32 + "> bla 42 ");
        
         
-        assertEquals(42,cCli.getCalcRes());
         assertEquals(3, cCli.getRcvdErs());
+        assertEquals(42,cCli.getCalcRes());
         
         cCli.disconnect();
     }
         
+    @Test
+    public void messageUtilTests() {
+    	assertEquals("<07:OK>", MessageUtils.generate("OK"));
+    }
 
 }

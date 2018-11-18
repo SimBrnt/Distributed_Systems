@@ -2,7 +2,6 @@ package de.unistgt.ipvs.vs.ex1.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
  * Extend the run-method of this class as necessary to complete the assignment.
@@ -36,14 +35,23 @@ public class CalcSocketServer extends Thread {
 		}
 
 		// Start listening server socket ..
+		try {
+			srvSocket = new ServerSocket(port);
+			while(true) {
+				new CalculationSession(srvSocket.accept()).start();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
         
-        public void waitUnitlRunnig(){
-            while(this.srvSocket == null){
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException ex) {
-                }
+    public void waitUnitlRunnig(){
+        while(this.srvSocket == null){
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ex) {
             }
         }
+    }
 }
