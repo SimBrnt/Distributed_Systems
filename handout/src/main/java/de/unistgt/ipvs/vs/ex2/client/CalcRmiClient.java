@@ -3,8 +3,6 @@ package de.unistgt.ipvs.vs.ex2.client;
 import de.unistgt.ipvs.vs.ex2.common.ICalculation;
 import de.unistgt.ipvs.vs.ex2.common.ICalculationFactory;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;

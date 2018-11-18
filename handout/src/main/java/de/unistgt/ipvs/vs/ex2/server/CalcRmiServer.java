@@ -3,7 +3,6 @@ package de.unistgt.ipvs.vs.ex2.server;
 import de.unistgt.ipvs.vs.ex2.common.ICalculation;
 import de.unistgt.ipvs.vs.ex2.common.ICalculationFactory;
 
-import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -28,19 +27,6 @@ public class CalcRmiServer extends Thread {
 		this.port = port;
 		this.url = "rmi://" + regHost + ":" + port + "/" + objName;
 		
-		try {
-			LocateRegistry.createRegistry(this.port);
-			ICalculation srv = new CalculationImpl();
-			Naming.bind(this.url, srv);
-			System.out.println("Server has been bound");
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (AlreadyBoundException e) {
-			e.printStackTrace();
-		}
-		
 	}
 
 	@Override
@@ -50,8 +36,22 @@ public class CalcRmiServer extends Thread {
 			return;
 		}
 
-		System.out.println("RUN");
-		// Add solution here
+		try {
+			LocateRegistry.createRegistry(this.port);
+		} catch (RemoteException e) {
+			
+		}
+		
+		try {
+			ICalculation srv = new CalculationImpl();
+			Naming.rebind(this.url, srv);
+			System.out.println("Server has been bound");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	public void stopServer() {
