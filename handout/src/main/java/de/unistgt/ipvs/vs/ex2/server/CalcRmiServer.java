@@ -35,11 +35,11 @@ public class CalcRmiServer extends Thread {
 			System.err.println("<registryHost> or <objectName> not set!");
 			return;
 		}
-
+		
 		try {
 			LocateRegistry.createRegistry(this.port);
 		} catch (RemoteException e) {
-			
+			// Do nothing in here because probably this exception is thrown only when the registry has been already created
 		}
 		
 		try {
