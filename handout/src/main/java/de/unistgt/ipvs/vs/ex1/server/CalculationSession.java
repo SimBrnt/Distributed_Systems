@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.DataOutputStream;
+
 
 
 /**
@@ -37,12 +39,41 @@ public class CalculationSession implements Runnable {
                     String req = in.readLine();
                     System.out.println("REQ "+req);
                     String[] length = req.split(":");
+                    System.out.println(length.length);
                     String[] finalReq = length[1].split(" ");
+                    DataOutputStream dOut = new DataOutputStream(socket.getOutputStream());
+
                     CalculationImpl calc;
-                    for(int i=0; i<finalReq.length; i++){
                         //HERE MANIPULATE THE REQ TO COMPUTE WHAT WE WANT
                         //Doing it with if statements ? 
-                        switch(finalReq[i])
+                    for(int i=0; i<finalReq.length; i++){
+                        dOut.writeByte(i);
+                        if(finalReq[i].matches("ADD")){
+                            System.out.println("ADD :)");
+                            dOut.writeUTF("<07:OK>");
+                            dOut.flush();
+                        }else if(finalReq[i].matches("SUB")){
+                            System.out.println("SUB :)");
+                            dOut.writeUTF("<07:OK>");
+                            dOut.flush();
+                        }else if(finalReq[i].matches("MUL")){
+                            System.out.println("MUL :)");
+                            dOut.writeUTF("<07:OK>");
+                            dOut.flush();
+                        }else if(finalReq[i].matches("RES")){
+                            System.out.println("RES :)");
+                            dOut.writeUTF("<07:OK>");
+                            dOut.flush();
+                        }else if(finalReq[i].matches("^-?\\d+$")){
+                            System.out.println("Int :)");
+                            dOut.writeUTF("<07:OK>");
+                            dOut.flush();
+                        }else if (finalReq[i] != "" && finalReq[i] != " "){
+                            System.out.println("Not a if");
+                            dOut.writeUTF("<"+":ERR "+">");
+                            dOut.flush();
+                        }
+                        /*switch(finalReq[i])
                             {
                             case "ADD":
                                     System.out.println("ADD :)");
@@ -69,7 +100,7 @@ public class CalculationSession implements Runnable {
                             default: 
                                     System.out.println("PAS UN CASE");
                                     out.println("<08:ERR");
-                            }
+                            }*/
                         System.out.println(finalReq[i]);
                     }
                     socket.close();

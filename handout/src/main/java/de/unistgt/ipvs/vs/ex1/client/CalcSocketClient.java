@@ -3,6 +3,7 @@ package de.unistgt.ipvs.vs.ex1.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.DataInputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
@@ -33,7 +34,7 @@ public class CalcSocketClient {
 		String req31 = "  MUL  1   ASM  ADD ABC 10    5  SUB 100 ADD10   ADD";
 		calcClient.connectTo("localhost", 2009);
 		calcClient.calculate("24 foo 42 <" + (req31.length() + 5) + ":" + req31 + ">");
-		calcClient.disconnect();
+		//calcClient.disconnect();
 	}
 	public int getRcvdOKs() {
 		return rcvdOKs;
@@ -81,28 +82,33 @@ public class CalcSocketClient {
 		// FAIRE UN REGEX valid message
 		// Trouver un moyen d'extraire avec un caractere d'un string
 		int i=0;
-		if(!request.contains("<")){
+		if(!request.contains("[<>")){
 			this.rcvdErs++;
 		}
 		String[] reqE = request.split("[<>]");
+		System.out.println(reqE[1]);
+		//Refaire le split ici et lui envoyé case par case et attendre la réponse
+		//dataoutput stream essayer avec
 			try{
 				out = new PrintWriter(this.cliSocket.getOutputStream());
-				out.println(reqE[1].toString());
+				out.println(reqE[1]);
 				out.flush();
-				in = new BufferedReader (new InputStreamReader (this.cliSocket.getInputStream()));
-				System.out.println(in.readLine());
 			}catch(IOException e){
 				e.printStackTrace();
 			}
 		//Solution here
 		try{
-			CalculationImpl calc = new CalculationImpl();
+			DataInputStream dIn = new DataInputStream(this.cliSocket.getInputStream());
+			String resp;
+			while((resp = dIn.readUTF()) != null){
+				System.out.println(resp);	
+			}	
 			/** Parse la request pour savoir si elle est valide, ensuite faire un switch case pour connaitre l'operation, appeler la bonne opération suivant la requête 
 			 * Réussir à gérer avec les in et out les requetes que le client envoie 
 			 * Renvoyer le resultat
 			 * pour i allant de 1 a operation.length
 			*/
-		}catch (RemoteException e){ 
+		}catch (IOException e){ 
 			e.printStackTrace();
 		}
 		return true;
