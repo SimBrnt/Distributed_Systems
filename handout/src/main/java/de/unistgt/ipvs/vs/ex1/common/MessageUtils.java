@@ -24,18 +24,13 @@ public class MessageUtils {
 			throw new RuntimeException("Length checker should be 2 zero-padded digits");
 		}
 		
-		// Accounting for <, >, XX and :
-		dataLen -= 5;
-		
 		List<String> cmds = new ArrayList<String>();
 		for(String cmd : parts[1].split(" ")) {
-			int particleLen = cmd.length();
-			dataLen -= particleLen + 1;
-			if(particleLen == 0) continue;
+			if(cmd.length() == 0) continue;
 			cmds.add(cmd);
 		}
 		
-		if (dataLen == -1) return cmds.toArray(new String[cmds.size()]);
+		if (dataLen == 5 + parts[1].length()) return cmds.toArray(new String[cmds.size()]);
 		else throw new RuntimeException("Message not as long as declared");
 	}
 	

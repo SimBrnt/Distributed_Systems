@@ -3,7 +3,6 @@ package de.unistgt.ipvs.vs.ex1;
 import de.unistgt.ipvs.vs.ex1.client.CalcSocketClient;
 import de.unistgt.ipvs.vs.ex1.common.MessageUtils;
 import de.unistgt.ipvs.vs.ex1.server.CalcSocketServer;
-import java.io.IOException;
 import static org.junit.Assert.*;
 import org.junit.Rule;
 
@@ -82,7 +81,7 @@ public class TestCalc {
         //Test 
         String req31 = "  MUL  1   ASM  ADD ABC 10    5  SUB 100 ADD10   ADD";
         cCli.calculate("24 foo 42 <" + (req31.length() + 5) + ":" + req31 + ">");
-
+        
         String req32 = "60 4 MUL -2 RES  ";
         cCli.calculate("a faq 23 <" + (req32.length() + 5) + ":" + req32 + "> bla 42 ");
        

@@ -83,20 +83,31 @@ public class CalcSocketClient {
 			boolean finReceived = false;
 			while(!finReceived) {
 				String ans = (String) oisIn.readObject();
+				boolean mustReadResult = false;
 				for(String cmd : MessageUtils.split(ans)) {
-					switch(cmd) {
-					case "FIN":
-						finReceived = true;
-						break;
-					case "OK":
-						rcvdOKs += 1;
-						break;
-					case "ERR":
-						rcvdErs += 1;
-						break;	
-					case "BRKERR":
-						System.err.println("The request generated a server error and could not be handled.");
-						break;
+					if(mustReadResult) {
+						try {
+							this.calcRes = Integer.parseInt(cmd);
+						} catch (NumberFormatException e) {
+							System.err.println("The server replied with an invalid message.");
+						}
+						mustReadResult = false;
+					} else switch(cmd) {
+						case "FIN":
+							finReceived = true;
+							break;
+						case "OK":
+							rcvdOKs += 1;
+							break;
+						case "ERR":
+							rcvdErs += 1;
+							break;
+						case "RES":
+							mustReadResult = true;
+							break;
+						case "BRKERR":
+							System.err.println("The request generated a server error and could not be handled.");
+							break;
 					}
 				}
 			}

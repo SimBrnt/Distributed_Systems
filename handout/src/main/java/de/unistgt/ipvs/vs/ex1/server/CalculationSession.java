@@ -15,6 +15,10 @@ import de.unistgt.ipvs.vs.ex1.common.MessageUtils;
 public class CalculationSession extends Thread {
 	Socket cliSocket;
 	
+	enum Operation {
+		Add, Subtract, Multiply
+	}
+	
 	public CalculationSession(Socket socket) {
 		this.cliSocket = socket;
 	}
@@ -24,6 +28,9 @@ public class CalculationSession extends Thread {
 		try {
 			ObjectOutputStream oosOut = new ObjectOutputStream(this.cliSocket.getOutputStream());
 			ObjectInputStream oisIn = new ObjectInputStream(this.cliSocket.getInputStream());
+			
+			ICalculation calc = new CalculationImpl();
+			Operation curOp = null;
 			
 			while(true) {
 				try {					
@@ -36,14 +43,33 @@ public class CalculationSession extends Thread {
 						for(String cmd : cmds) {
 							switch(cmd) {
 							case "ADD":
+								curOp = Operation.Add;
+								break;
 							case "SUB":
+								curOp = Operation.Subtract;
+								break;
 							case "MUL":
+								curOp = Operation.Multiply;
+								break;
 							case "RES":
+								oosOut.writeObject(MessageUtils.generate("RES " + calc.getResult()));
 								break;
 							default:
-								if(cmd.matches("-?\\d+"))
+								if(cmd.matches("-?\\d+")) {
+									int operand = Integer.parseInt(cmd);
+									switch(curOp) {
+									case Add:
+										calc.add(operand);
+										break;
+									case Subtract:
+										calc.subtract(operand);
+										break;
+									case Multiply:
+										calc.multiply(operand);
+										break;
+									}
 									break;
-								else {
+								} else {
 									oosOut.writeObject(MessageUtils.generate("ERR " + cmd));
 									continue;
 								}
@@ -71,3 +97,4 @@ public class CalculationSession extends Thread {
 		}
 	}
 }
+
