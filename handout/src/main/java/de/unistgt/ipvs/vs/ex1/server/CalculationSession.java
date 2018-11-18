@@ -29,19 +29,24 @@ public class CalculationSession extends Thread {
 			ObjectOutputStream oosOut = new ObjectOutputStream(this.cliSocket.getOutputStream());
 			ObjectInputStream oisIn = new ObjectInputStream(this.cliSocket.getInputStream());
 			
+			// Send RDY when ready
 			oosOut.writeObject(MessageUtils.generate("RDY"));
 			
 			ICalculation calc = new CalculationImpl();
 			Operation curOp = null;
 			
+			// Cycles until stream is not closed from the client
 			while(true) {
 				try {					
 					String request = (String) oisIn.readObject();
+					
+					// Send OK as soon a new request has been read
 					oosOut.writeObject(MessageUtils.generate("OK"));
 					
 					try {
 						String[] cmds = MessageUtils.split(request);
 						
+						// Process every particle sequentially
 						for(String cmd : cmds) {
 							switch(cmd) {
 							case "ADD":
@@ -57,7 +62,7 @@ public class CalculationSession extends Thread {
 								oosOut.writeObject(MessageUtils.generate("RES " + calc.getResult()));
 								break;
 							default:
-								if(cmd.matches("-?\\d+")) {
+								if(cmd.matches("-?\\d+")) {	// If cmd is a number
 									int operand = Integer.parseInt(cmd);
 									switch(curOp) {
 									case Add:

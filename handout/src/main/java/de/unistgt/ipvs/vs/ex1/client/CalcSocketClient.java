@@ -40,6 +40,12 @@ public class CalcSocketClient {
 		return calcRes;
 	}
 
+	/**
+	 * Creates a connection (sockets and streams) toward server at given address and port
+	 * @param srvIP Server address 
+	 * @param srvPort Server port
+	 * @return true on success
+	 */
 	public boolean connectTo(String srvIP, int srvPort) {
                
 		try {
@@ -68,18 +74,29 @@ public class CalcSocketClient {
 		return true;
 	}
 
+	/**
+	 * Terminates the current connection
+	 * @return true on success
+	 */
 	public boolean disconnect() {
                
 		try {
 			oosOut.close();
 			oisIn.close();
+			cliSocket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+			return false;
 		}
                
 		return true;
 	}
 
+	/**
+	 * Handles a request. Keeps going until server fully handles the given request or until there is a blocking error.
+	 * @param request The request to send to the connected server.
+	 * @return true if everything went fine.
+	 */
 	public boolean calculate(String request) {
         
 		if (cliSocket == null) {
@@ -129,6 +146,7 @@ public class CalcSocketClient {
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		}
 		return true;
 	}
