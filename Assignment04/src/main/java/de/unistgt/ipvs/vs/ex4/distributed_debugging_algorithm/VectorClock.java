@@ -50,7 +50,12 @@ public class VectorClock {
 		 * See slide 41 from global state lecture.
 		 */
 		int[] otherClock = other.get();
-		return this.vectorClock[otherProcessId] <= otherClock[otherProcessId];
+		if (this.vectorClock[this.processId]>= otherClock[this.processId] && this.vectorClock[otherProcessId]<= otherClock[otherProcessId]){
+			return true;
+		}else{
+			return false;
+		}
+		//return this.vectorClock[otherProcessId] <= otherClock[otherProcessId];
 
 	}
 
