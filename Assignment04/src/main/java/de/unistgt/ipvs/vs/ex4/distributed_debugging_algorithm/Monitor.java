@@ -1,5 +1,6 @@
 package de.unistgt.ipvs.vs.ex4.distributed_debugging_algorithm;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -51,6 +52,15 @@ public class Monitor implements Runnable {
 					return false;
 
 			return true;
+		}
+		
+		@Override
+		public String toString() {
+			String s = "State: ";
+			for(int i = 0; i < numberOfProcesses; ++i) {
+				s += processesMessagesCurrentIndex[i] + " ";
+			}
+			return s;
 		}
 	}
 
@@ -172,23 +182,47 @@ public class Monitor implements Runnable {
 		 * checkPredicate functions. NOTE2: predicateNo, process_i_id and
 		 * process_j_id are described in checkPredicate function.
 		 */
-
+		boolean[] possiblyDefinitely = checkPredicate(predicateNo, process_i_id, process_j_id);
+		possiblyTruePredicatesIndex[predicateNo] = possiblyDefinitely[0];
+		definitelyTruePredicatesIndex[predicateNo] = possiblyDefinitely[1];
 	}
-
+	
 	/**
 	 * find all reachable states starting from a given state
 	 *
 	 * @param state
 	 * @return list of all reachable states
 	 */
-	private LinkedList<State> findReachableStates(State state) {
+	public LinkedList<State> findReachableStates(State state) {
 		// TODO
 		/*
 		 * Given a state, implement a code that find all reachable states. The
 		 * function should return a list of all reachable states
 		 *
 		 */
-		return null;
+	
+		LinkedList<State> reachables = new LinkedList<State>();
+		
+		for(int i = 0; i < numberOfProcesses; ++i) {
+			int[] curIdxs = state.getProcessesMessagesCurrentIndex().clone();
+			++curIdxs[i];
+			if(curIdxs[i] < processesMessages.get(i).size()) {
+				// Create new state;
+				State s = new State(curIdxs);
+				VectorClock iClock = processesMessages.get(i).get(s.getProcessMessageCurrentIndex(i)).getVectorClock();
+				for(int j = 0; j < numberOfProcesses; ++j) {
+					if(i == j) continue;
+					VectorClock jClock = processesMessages.get(j).get(s.getProcessMessageCurrentIndex(j)).getVectorClock();
+					boolean consistent = jClock.checkConsistency(i, iClock);
+					//System.out.println(iClock + " " + jClock + ": " + consistent);
+					if(consistent && !reachables.contains(s)) {
+						reachables.add(s);
+					}
+				}
+			}
+		}
+		
+		return reachables;
 	}
 
 	/**
@@ -204,7 +238,7 @@ public class Monitor implements Runnable {
 	 *            which predicate to validate
 	 * @return true if predicate is definitely true else return false
 	 */
-	private boolean checkPredicate(int predicateNo, int process_i_Id, int process_j_id) {
+	private boolean[] checkPredicate(int predicateNo, int process_i_id, int process_j_id) {
 		// TODO
 		/*
 		 * - check if a predicate is possibly and/or definitely true. - iterate
@@ -213,8 +247,68 @@ public class Monitor implements Runnable {
 		 * Predicate.predicate0(process_i_Message, process_j_Message); break;
 		 * case 1: ... }
 		 */
-
-		 return false;
+		
+		boolean[] possiblyDefinitely = new boolean[2];
+		possiblyDefinitely[0] = false;
+		possiblyDefinitely[1] = false;
+		
+		List<State> levelReachables = new LinkedList<State>();
+		
+		int[] initial = new int[this.numberOfProcesses];
+		for(int i = 0; i < initial.length; ++i) initial[i] = 0;
+		
+		levelReachables.add(new State(initial));
+		
+		while(!levelReachables.isEmpty()) {
+			List<State> nextLevelReachables = new LinkedList<State>();
+			//System.out.println("NEW LEVEL");
+			boolean allTrue = true;
+			for(int i = 0; i < levelReachables.size(); ++i) {
+				State s = levelReachables.get(i);
+				//System.out.println(s);
+				boolean predicate = false;
+				switch (predicateNo) { 
+				case 0: 
+					predicate = Predicate.predicate0(
+							processesMessages.get(process_i_id).get(s.getProcessMessageCurrentIndex(process_i_id)),
+							processesMessages.get(process_j_id).get(s.getProcessMessageCurrentIndex(process_j_id))
+					); break;
+				case 1: 
+					predicate = Predicate.predicate1(
+							processesMessages.get(process_i_id).get(s.getProcessMessageCurrentIndex(process_i_id)),
+							processesMessages.get(process_j_id).get(s.getProcessMessageCurrentIndex(process_j_id))
+					); break;
+				case 2: 
+					predicate = Predicate.predicate2(
+							processesMessages.get(process_i_id).get(s.getProcessMessageCurrentIndex(process_i_id)),
+							processesMessages.get(process_j_id).get(s.getProcessMessageCurrentIndex(process_j_id))
+					); break;
+				case 3: 
+					predicate = Predicate.predicate3(
+							processesMessages.get(process_i_id).get(s.getProcessMessageCurrentIndex(process_i_id)),
+							processesMessages.get(process_j_id).get(s.getProcessMessageCurrentIndex(process_j_id))
+					); break;
+				}
+				allTrue = allTrue && predicate;
+				possiblyDefinitely[0] = possiblyDefinitely[0] | predicate;
+				
+				List<State> sReach = findReachableStates(s);
+				//System.out.print(s + "//// ");
+				for(int j = 0; j < sReach.size(); ++j) {
+					//System.out.print(sReach.get(j) + "// ");
+					if(!nextLevelReachables.contains(sReach.get(j))) {
+						nextLevelReachables.add(sReach.get(j));
+					}
+				}
+				//System.out.println();
+			}
+			if(allTrue) possiblyDefinitely[1] = true;
+			levelReachables = nextLevelReachables;
+		}
+			
+		
+		return possiblyDefinitely;
+		
 	}
 
 }
