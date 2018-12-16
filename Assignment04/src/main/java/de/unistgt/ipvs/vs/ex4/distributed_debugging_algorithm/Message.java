@@ -17,4 +17,9 @@ public class Message {
 	public VectorClock getVectorClock() {
 		return vectorClock;
 	}
+	
+	@Override
+	public String toString() {
+		return "Msg(" +  vectorClock + ", " + localVariable + ")";
+	}
 }

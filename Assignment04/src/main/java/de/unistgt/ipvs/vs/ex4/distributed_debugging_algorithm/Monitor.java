@@ -142,13 +142,14 @@ public class Monitor implements Runnable {
 	@Override
 	public void run() {
 		// wait till all processes terminate
+		
 		while (runningProcesses.get() != 0)
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-
+		
 		// create initial state (S00)
 		State initialState = new State(numberOfProcesses);
 
@@ -168,6 +169,15 @@ public class Monitor implements Runnable {
 			buildLattice(predicateNo, 0, 2);
 			states.clear();
 		}
+		
+		for(int i = 0; i < processesMessages.size(); ++i) {
+			List<Message> msgs = processesMessages.get(i);
+			for(int j = 0; j < msgs.size(); ++j) {
+				Message msg = msgs.get(j);
+				System.out.print(msg + " ");
+			}
+			System.out.println();
+		}
 
 	}
 
@@ -182,6 +192,7 @@ public class Monitor implements Runnable {
 		 * checkPredicate functions. NOTE2: predicateNo, process_i_id and
 		 * process_j_id are described in checkPredicate function.
 		 */
+		
 		boolean[] possiblyDefinitely = checkPredicate(predicateNo, process_i_id, process_j_id);
 		possiblyTruePredicatesIndex[predicateNo] = possiblyDefinitely[0];
 		definitelyTruePredicatesIndex[predicateNo] = possiblyDefinitely[1];
@@ -293,14 +304,14 @@ public class Monitor implements Runnable {
 				possiblyDefinitely[0] = possiblyDefinitely[0] | predicate;
 				
 				List<State> sReach = findReachableStates(s);
-				//System.out.print(s + "//// ");
+				System.out.print(s + "//// ");
 				for(int j = 0; j < sReach.size(); ++j) {
-					//System.out.print(sReach.get(j) + "// ");
+					System.out.print(sReach.get(j) + "// ");
 					if(!nextLevelReachables.contains(sReach.get(j))) {
 						nextLevelReachables.add(sReach.get(j));
 					}
 				}
-				//System.out.println();
+				System.out.println();
 			}
 			if(allTrue) possiblyDefinitely[1] = true;
 			levelReachables = nextLevelReachables;

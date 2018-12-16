@@ -120,6 +120,10 @@ public class DebugTest {
 		boolean[] possiblyTruePredicatesIndex = monitor.getPossiblyTruePredicatesIndex();
 		boolean[] definitelyTruePredicatesIndex = monitor.getDefinitelyTruePredicatesIndex();
 
+		
+		for (int i = 0; i < 4; ++i) System.out.print(possiblyTruePredicatesIndex[i] + " "); System.out.println();
+		for (int i = 0; i < 4; ++i) System.out.print(definitelyTruePredicatesIndex[i] + " "); System.out.println();
+		
 		// predicate0
                 assertEquals(true, possiblyTruePredicatesIndex[0]);
                 assertEquals(true, definitelyTruePredicatesIndex[0]);

@@ -32,8 +32,7 @@ public class Predicate {
 		/*
 		 * Add you code here to implement predicate1 x1- x3=8
 		 */
-
-		return false;
+		return process_i_Message.getLocalVariable() - process_j_Message.getLocalVariable() == 8;
 	}
 
 }

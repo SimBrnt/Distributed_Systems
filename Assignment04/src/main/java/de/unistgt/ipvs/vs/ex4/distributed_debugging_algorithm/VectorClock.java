@@ -57,7 +57,10 @@ public class VectorClock {
 	
 	@Override
 	public String toString() {
-		return "VC(" + vectorClock[0] + ", " + vectorClock[1] + ")";
+		String s = "";
+		for(int i = 0; i < vectorClock.length; ++i)
+			s += vectorClock[i] + ", ";
+		return "VC(" + s.substring(0, s.length() - 2) + ")";
 	}
 
 }
